@@ -13,6 +13,8 @@ var configDB = require('./config/database.js');
 
 mongoose.connect(configDB.url);
 
+require('./config/passport')(passport);
+
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser()); // get information from html forms
@@ -26,6 +28,18 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 require('./routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+
+// socket settings
+io.on('connection', function(socket){
+    console.log('a user connected');
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+    });
+    socket.on('chat message', function(msg){
+        console.log('message: ' + msg);
+        io.emit('chat message', msg);
+    });
+});
 
 app.listen(port);
 console.log('The magic happens on port ' + port);
@@ -41,14 +55,5 @@ http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-  socket.on('chat message', function(msg){
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
-  });
-});
+
  */
