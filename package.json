@@ -1,0 +1,21 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "Jere Nurminen",
+  "contributors": [],
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.7.2",
+    "express-stormpath": "latest"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
