@@ -1,6 +1,7 @@
 var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var server  = require('http').createServer(app);
+//var http = require('http').Server(app);
+var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 var mongoose = require('mongoose');
 var passport = require('passport');
@@ -10,6 +11,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var configDB = require('./config/database.js');
+var messageModel = require('./models/message.js');
 
 mongoose.connect(configDB.url);
 
@@ -29,20 +31,30 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 require('./routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 
-// socket settings
+//app.listen(port);
+//console.log('The magic happens on port ' + port);
+
+server.listen(port, function () {
+    console.log('Server listening at port %d', port);
+});
+
 io.on('connection', function(socket){
     console.log('a user connected');
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
     socket.on('chat message', function(msg){
-        console.log('message: ' + msg);
+        console.log(msg.username + ': ' + msg.message);
         io.emit('chat message', msg);
+        messageModel.message.create({
+            nickname: msg.username,
+            message : msg.message,
+            date    : msg.date
+        }, function (err, rs) {
+            console.log(err);
+        });
     });
 });
-
-app.listen(port);
-console.log('The magic happens on port ' + port);
 
 
 /*

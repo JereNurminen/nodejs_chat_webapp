@@ -13,7 +13,14 @@
   "dependencies": {
     "express": "^4.10.2",
     "socket.io": "^1.7.2",
-    "express-stormpath": "latest"
+    "express-stormpath": "latest",
+    "mongoose": "latest",
+    "passport": "latest",
+    "connect-flash": "latest",
+    "morgan": "latest",
+    "cookie-parser": "latest",
+    "body-parser": "latest",
+    "express-session": "latest"
   },
   "scripts": {
     "start": "node server.js"

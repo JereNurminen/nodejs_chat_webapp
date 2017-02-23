@@ -30,7 +30,7 @@ module.exports = function(app, passport) {
     // process the login form
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-        successRedirect : '/profile', // redirect to the secure profile section
+        successRedirect : '/chat', // redirect to the secure profile section
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
@@ -68,7 +68,11 @@ module.exports = function(app, passport) {
     // =====================================
     app.get('/logout', function(req, res) {
         req.logout();
-        res.redirect('/signup');
+        res.redirect('/login');
+    });
+
+    app.post('/newMsg', function(req, res) {
+
     });
 };
 
@@ -80,5 +84,5 @@ function isLoggedIn(req, res, next) {
         return next();
 
     // if they aren't redirect them to the home page
-    res.redirect('/signup');
+    res.redirect('/login');
 }
