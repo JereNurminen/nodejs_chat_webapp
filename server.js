@@ -1,4 +1,5 @@
 var app = require('express')();
+var express = require('express');
 var server  = require('http').createServer(app);
 //var http = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -28,6 +29,7 @@ app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secre
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(express.static('public'));
 
 require('./routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 
@@ -39,15 +41,27 @@ server.listen(port, function () {
 });
 
 io.on('connection', function(socket){
+    messageModel.message.find().limit(25).sort({_id: -1}).exec(function (err, results) {
+        results.reverse();
+        results.forEach(function (message) {
+            if (message.username != null) {
+                socket.emit('chat message', message);
+            }
+        });
+    });
+
     console.log('a user connected');
+    //io.emit('user joined', user.local.username);
     socket.on('disconnect', function(){
         console.log('user disconnected');
+
     });
+
     socket.on('chat message', function(msg){
         console.log(msg.username + ': ' + msg.message);
         io.emit('chat message', msg);
         messageModel.message.create({
-            nickname: msg.username,
+            username: msg.username,
             message : msg.message,
             date    : msg.date
         }, function (err, rs) {

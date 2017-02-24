@@ -2,34 +2,31 @@
 <html>
 <head>
     <title>Chat</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font: 13px Helvetica, Arial; }
-        form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-        form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-        #messages { list-style-type: none; margin: 0; padding: 0; }
-        #messages li { padding: 5px 10px; }
-        #messages li:nth-child(odd) { background: #eee; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/chat.css">
 </head>
 <body>
-<header>
-    <h2>Hello <span id="username"><%= user.local.username %></span></h2>
-    <p>Not you? <a href="/logout">Log out</a></p>
-</header>
-<ul id="messages"></ul>
-<form action="">
-    <input type="text" id="newMessage" autocomplete="off"/>
-    <button>Send</button>
-</form>
+<div id="container">
+    <span id="username"><%= user.local.username %></span>
+    <!--<header>
+        <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
+        <p>Not you? <a href="/logout">Log out</a></p>
+    </header>-->
+    <ul id="messages"></ul>
+    <form action="">
+        <!--<input type="text" id="newMessage" autocomplete="off"/>-->
+        <textarea id="newMessage"></textarea>
+        <button>Send</button>
+    </form>
+</div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
     var socket = io().connect(/*'http://localhost:3000'*/);
+    var username = $('#username').text();
+    socket.emit('user join', username);
     $('form').submit(function(){
         var msg = {
-            username: $('#username').text(),
+            username: username,
             message: $('#newMessage').val(),
             date: Date.now()
         }
@@ -39,8 +36,19 @@
         $('#newMessage').val('');
         return false;
     });
+    socket.on('user join', function(user) {
+        $('#messages').append($('<li>')).append($('<div class="msg">')).append($('<p>')).text(user + " joined");
+    })
     socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg.username + ": " + msg.message));
+        var messagesList = $("#messages");
+        var lastMsgSender = $("ul li").last().find("div").data('sender');
+        messagesList.append($('<li>'));
+        var lastMsgLi = $( "li" ).last();
+        if (lastMsgSender != msg.username) {
+            lastMsgLi.append($('<p class="sender">').text(msg.username));
+            //lastMsgLi.append($('<br>'));
+        }
+        lastMsgLi.append($('<div class="msg" data-sender="' + msg.username + '">').append($('<p>').text(msg.message)));
     });
 </script>
 </body>
