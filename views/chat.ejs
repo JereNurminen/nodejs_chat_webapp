@@ -5,51 +5,123 @@
     <link rel="stylesheet" type="text/css" href="/chat.css">
 </head>
 <body>
+
+<div id="profile">
+
+    <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
+    <p id="logout">Not you? <a href="/logout">Log out.</a></p>
+    <img src="" id="profilePicture">
+    <button id="changeProfilePictureButton">Change profile picture</button>
+
+    <form id="changeProfilePictureForm">
+        <input type="file" name="picture" id="picture">
+        <button>Select</button>
+    </form>
+
+    <div id="status">
+
+        <div id="oldStatus">
+            <p><%= user.local.status %></p>
+            <button id="modifyStatus">Change Status</button>
+        </div>
+
+        <div id="newStatus">
+            <textarea id="statusBox"></textarea>
+            <button id="saveStatus">Save</button>
+            <button id="cancelStatus">Cancel</button>
+        </div>
+
+    </div>
+</div>
+
 <div id="container">
-    <span id="username"><%= user.local.username %></span>
-    <!--<header>
-        <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
-        <p>Not you? <a href="/logout">Log out</a></p>
-    </header>-->
+
     <ul id="messages"></ul>
-    <form action="">
+
+    <form id="newMessageField" action="">
         <!--<input type="text" id="newMessage" autocomplete="off"/>-->
         <textarea id="newMessage"></textarea>
         <button>Send</button>
     </form>
+
 </div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    var socket = io().connect(/*'http://localhost:3000'*/);
+
+    var socket = io().connect();
     var username = $('#username').text();
     socket.emit('user join', username);
-    $('form').submit(function(){
-        var msg = {
-            username: username,
-            message: $('#newMessage').val(),
-            date: Date.now()
-        }
 
-        console.log(msg);
-        socket.emit('chat message', msg);
-        $('#newMessage').val('');
-        return false;
+    $( document ).ready(function() {
+
+        $('#modifyStatus').click(function() {
+            event.preventDefault();
+            $('#oldStatus').hide();
+            $('#newStatus').show();
+        });
+
+        $('#cancelStatus').click( function() {
+            event.preventDefault();
+            $('#newStatus').hide();
+            $('#oldStatus').show();
+        });
+
+        $('#saveStatus').click( function() {
+            event.preventDefault();
+            $('#newStatus').hide();
+            $('#oldStatus').show();
+            var newStatus = $('#statusBox').val();
+            console.log(newStatus);
+            //var userId = $('#userId').text();
+            $.post('/updateStatus',
+                    {
+                        status: newStatus
+                    });
+        });
+
+        $('#changeProfilePictureButton').click(function(){
+            event.preventDefault();
+            $('#changeProfilePictureForm').show();
+        });
+
+        $('#newMessageField').submit(function () {
+            event.preventDefault();
+            var msg = {
+                username: username,
+                message: $('#newMessage').val(),
+                date: Date.now()
+            }
+            console.log(msg);
+            socket.emit('chat message', msg);
+            $('#newMessage').val('');
+            return false;
+        });
+
     });
-    socket.on('user join', function(user) {
-        $('#messages').append($('<li>')).append($('<div class="msg">')).append($('<p>')).text(user + " joined");
-    })
-    socket.on('chat message', function(msg){
+
+    socket.on('user join', function (user) {
+        console.log(user + " joined.");
+        var messagesList = $("#messages");
+        //var lastMsgSender = $("ul li").last().find("div").data('sender');
+        messagesList.append($('<li>'));
+        var lastMsgLi = $("li").last();
+        lastMsgLi.append($('<p class="joinMsg">').text(user + " joined!"));
+    });
+
+    socket.on('chat message', function (msg) {
         var messagesList = $("#messages");
         var lastMsgSender = $("ul li").last().find("div").data('sender');
         messagesList.append($('<li>'));
-        var lastMsgLi = $( "li" ).last();
+        var lastMsgLi = $("li").last();
         if (lastMsgSender != msg.username) {
             lastMsgLi.append($('<p class="sender">').text(msg.username));
             //lastMsgLi.append($('<br>'));
         }
         lastMsgLi.append($('<div class="msg" data-sender="' + msg.username + '">').append($('<p>').text(msg.message)));
     });
+
 </script>
 </body>
 </html>

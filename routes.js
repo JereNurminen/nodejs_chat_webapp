@@ -1,13 +1,19 @@
 // app/routes.js
 module.exports = function(app, passport) {
+    var mongoose = require('mongoose');
+    var userModel = require('./models/user.js');
+    var bodyParser = require('body-parser');
+    app.use(bodyParser.json()); // support json encoded bodies
+    app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
     // =====================================
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/chat', isLoggedIn, function(req, res) {
         res.render('chat.ejs', {
+            user_id: req.user._id,
             user : req.user
-        }); // load the index.ejs file
+        });
     });
 
     app.get('/', isLoggedIn, function(req, res) {
@@ -71,8 +77,15 @@ module.exports = function(app, passport) {
         res.redirect('/login');
     });
 
-    app.post('/newMsg', function(req, res) {
+    app.post('/updateStatus', function(req, res) {
+        var id = req.user.id;
+        var status = req.body.status;
+        console.log("user id: " + id + "\nnew status: " + status);
 
+        userModel.findByIdAndUpdate(id, {'local.status': status}, { new: true }, function(err) {
+            if (err) return handleError(err);
+            console.log("Status updated!");
+        })
     });
 };
 

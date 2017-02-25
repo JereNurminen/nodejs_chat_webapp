@@ -40,7 +40,14 @@ server.listen(port, function () {
     console.log('Server listening at port %d', port);
 });
 
+/*
+function sendHeartbeat(){
+    setTimeout(sendHeartbeat, 8000);
+    io.sockets.emit('ping', { beat : 1 });
+}*/
+
 io.on('connection', function(socket){
+
     messageModel.message.find().limit(25).sort({_id: -1}).exec(function (err, results) {
         results.reverse();
         results.forEach(function (message) {
@@ -50,11 +57,15 @@ io.on('connection', function(socket){
         });
     });
 
-    console.log('a user connected');
-    //io.emit('user joined', user.local.username);
+    console.log("user connected!");
+
     socket.on('disconnect', function(){
         console.log('user disconnected');
 
+    });
+
+    socket.on('user join', function(user) {
+        console.log(user + ' joined');
     });
 
     socket.on('chat message', function(msg){
@@ -69,6 +80,8 @@ io.on('connection', function(socket){
         });
     });
 });
+
+//setTimeout(sendHeartbeat, 8000);
 
 
 /*
