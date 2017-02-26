@@ -11,16 +11,18 @@
   "author": "Jere Nurminen",
   "contributors": [],
   "dependencies": {
+    "body-parser": "latest",
+    "connect-flash": "latest",
+    "cookie-parser": "latest",
     "express": "^4.10.2",
-    "socket.io": "^1.7.2",
+    "express-session": "latest",
     "express-stormpath": "latest",
     "mongoose": "latest",
-    "passport": "latest",
-    "connect-flash": "latest",
     "morgan": "latest",
-    "cookie-parser": "latest",
-    "body-parser": "latest",
-    "express-session": "latest"
+    "multer": "^1.3.0",
+    "passport": "latest",
+    "push.js": "0.0.12",
+    "socket.io": "^1.7.2"
   },
   "scripts": {
     "start": "node server.js"

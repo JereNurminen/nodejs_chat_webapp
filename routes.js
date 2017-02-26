@@ -3,6 +3,7 @@ module.exports = function(app, passport) {
     var mongoose = require('mongoose');
     var userModel = require('./models/user.js');
     var bodyParser = require('body-parser');
+    var multer = require('multer');
     app.use(bodyParser.json()); // support json encoded bodies
     app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
@@ -53,9 +54,9 @@ module.exports = function(app, passport) {
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect : '/profile', // redirect to the secure profile section
+        successRedirect : '/login', // redirect to the secure profile section
         failureRedirect : '/signup', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
+        failureFlash    : true // allow flash messages
     }));
 
     // =====================================
@@ -87,15 +88,26 @@ module.exports = function(app, passport) {
             console.log("Status updated!");
         })
     });
+
+    app.post('/userInfoById', function(req, res) {
+        var searchUser = req.body.searchUser;
+        console.log("Retrieving " + searchUser);
+        userModel.findOne({'local.username': searchUser}, function (err, obj) {
+            obj.local.password = null;
+            res.setHeader('Content-Type', 'application/json');
+            res.send(obj);
+        });
+    });
+
+    app.post('/changeProfilePic', function(req, res) {
+
+    })
 };
 
-// route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
-    // if user is authenticated in the session, carry on 
     if (req.isAuthenticated())
         return next();
 
-    // if they aren't redirect them to the home page
     res.redirect('/login');
 }

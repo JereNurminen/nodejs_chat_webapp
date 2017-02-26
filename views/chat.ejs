@@ -10,25 +10,25 @@
 
     <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
     <p id="logout">Not you? <a href="/logout">Log out.</a></p>
-    <img src="" id="profilePicture">
-    <button id="changeProfilePictureButton">Change profile picture</button>
+    <img src="/profile-blank.svg" id="profilePicture">
+    <button class="button" id="changeProfilePictureButton">Change profile picture</button>
 
-    <form id="changeProfilePictureForm">
+    <form id="changeProfilePictureForm" action="/changeProfilePic" method="post">
         <input type="file" name="picture" id="picture">
-        <button>Select</button>
+        <button class="button">Select</button>
     </form>
 
     <div id="status">
 
         <div id="oldStatus">
             <p><%= user.local.status %></p>
-            <button id="modifyStatus">Change Status</button>
+            <button class="button" id="modifyStatus">Change Status</button>
         </div>
 
         <div id="newStatus">
             <textarea id="statusBox"></textarea>
-            <button id="saveStatus">Save</button>
-            <button id="cancelStatus">Cancel</button>
+            <button class="button" id="saveStatus">Save</button>
+            <button class="button" id="cancelStatus">Cancel</button>
         </div>
 
     </div>
@@ -46,82 +46,16 @@
 
 </div>
 
+<div id="profileView">
+    <img src="/profile-blank.svg" id="profilePicture">
+
+    <h3 id="profileViewName"></h3>
+    <p id="profileViewStatus"></p>
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="push.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-<script>
-
-    var socket = io().connect();
-    var username = $('#username').text();
-    socket.emit('user join', username);
-
-    $( document ).ready(function() {
-
-        $('#modifyStatus').click(function() {
-            event.preventDefault();
-            $('#oldStatus').hide();
-            $('#newStatus').show();
-        });
-
-        $('#cancelStatus').click( function() {
-            event.preventDefault();
-            $('#newStatus').hide();
-            $('#oldStatus').show();
-        });
-
-        $('#saveStatus').click( function() {
-            event.preventDefault();
-            $('#newStatus').hide();
-            $('#oldStatus').show();
-            var newStatus = $('#statusBox').val();
-            console.log(newStatus);
-            //var userId = $('#userId').text();
-            $.post('/updateStatus',
-                    {
-                        status: newStatus
-                    });
-        });
-
-        $('#changeProfilePictureButton').click(function(){
-            event.preventDefault();
-            $('#changeProfilePictureForm').show();
-        });
-
-        $('#newMessageField').submit(function () {
-            event.preventDefault();
-            var msg = {
-                username: username,
-                message: $('#newMessage').val(),
-                date: Date.now()
-            }
-            console.log(msg);
-            socket.emit('chat message', msg);
-            $('#newMessage').val('');
-            return false;
-        });
-
-    });
-
-    socket.on('user join', function (user) {
-        console.log(user + " joined.");
-        var messagesList = $("#messages");
-        //var lastMsgSender = $("ul li").last().find("div").data('sender');
-        messagesList.append($('<li>'));
-        var lastMsgLi = $("li").last();
-        lastMsgLi.append($('<p class="joinMsg">').text(user + " joined!"));
-    });
-
-    socket.on('chat message', function (msg) {
-        var messagesList = $("#messages");
-        var lastMsgSender = $("ul li").last().find("div").data('sender');
-        messagesList.append($('<li>'));
-        var lastMsgLi = $("li").last();
-        if (lastMsgSender != msg.username) {
-            lastMsgLi.append($('<p class="sender">').text(msg.username));
-            //lastMsgLi.append($('<br>'));
-        }
-        lastMsgLi.append($('<div class="msg" data-sender="' + msg.username + '">').append($('<p>').text(msg.message)));
-    });
-
-</script>
+<script src="/functions.js"></script>
 </body>
 </html>

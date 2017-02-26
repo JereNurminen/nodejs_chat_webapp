@@ -49,12 +49,15 @@ textarea {
     display: inline-block;
     padding: 4pt 8pt;
     margin-top: 5pt;
-    border: thin solid black;
+    /*border: thin solid black;*/
     border-radius: 5pt;
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.1);
 }
 
 .msg {
-    background-color: lightyellow;
+    background-color: white;
 }
 
 .joinMsg {
@@ -81,16 +84,49 @@ textarea {
     height: 100vh;
     text-align: center;
     padding: 10pt 0pt;
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
 }
 
 #changeProfilePictureForm {
     display: none;
 }
 
-#oldStatus {
-
+#oldStatus > p {
+    padding: 5pt;
+    background-color: white;
+    margin-top: 10pt;
+    margin-bottom: 10pt;
+    min-height: 20pt;
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
 }
 
 #newStatus {
+    display: none;
+}
+
+#profilePicture {
+    width: 50%;
+    border-radius: 50%;
+    margin: 10pt;
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
+}
+
+.button {
+    background-color: cadetblue;
+    border-style: none;
+    padding: 5pt;
+    border-radius: 5pt;
+}
+
+#profileView {
+    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
     display: none;
 }

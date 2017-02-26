@@ -1,0 +1,24 @@
+#container {
+    font-family: 'Lato', sans-serif;
+    display: inline-block;
+    background-color: aliceblue;
+    padding: 20pt 55pt;
+    border-radius: 30pt;
+}
+
+form {
+    display: inline-block;
+}
+
+input {
+    border-style: none;
+    background-color: white;
+}
+
+button {
+    border-style: none;
+    background-color: #C1FF9B;
+    padding: 10pt;
+    border-radius: 10pt;
+    margin-top: 8pt;
+}
