@@ -93,7 +93,7 @@ textarea {
     display: none;
 }
 
-#oldStatus > p {
+.status {
     padding: 5pt;
     background-color: white;
     margin-top: 10pt;
@@ -124,9 +124,15 @@ textarea {
     border-radius: 5pt;
 }
 
-#profileView {
-    position: fixed;
-    margin-left: auto;
-    margin-right: auto;
+#visitProfile {
     display: none;
+}
+
+.backToProfile {
+    border-radius: 50%;
+    background-color: white;
+    border-style: none;
+    position: absolute;
+    top: 10pt;
+    left: 10pt;
 }

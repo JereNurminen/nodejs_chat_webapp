@@ -3,34 +3,45 @@
 <head>
     <title>Chat</title>
     <link rel="stylesheet" type="text/css" href="/chat.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 </head>
 <body>
 
 <div id="profile">
+    <div data-profile="own">
+        <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
+        <p id="logout">Not you? <a href="/logout">Log out.</a></p>
+        <img src="/profile-blank.svg" id="profilePicture">
+        <button class="button" id="changeProfilePictureButton">Change profile picture</button>
 
-    <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
-    <p id="logout">Not you? <a href="/logout">Log out.</a></p>
-    <img src="/profile-blank.svg" id="profilePicture">
-    <button class="button" id="changeProfilePictureButton">Change profile picture</button>
+        <form id="changeProfilePictureForm" action="/changeProfilePic" method="post">
+            <input type="file" name="picture" id="picture">
+            <button class="button">Select</button>
+        </form>
 
-    <form id="changeProfilePictureForm" action="/changeProfilePic" method="post">
-        <input type="file" name="picture" id="picture">
-        <button class="button">Select</button>
-    </form>
+        <div id="status">
 
-    <div id="status">
+            <div id="oldStatus">
+                <p class="status"><%= user.local.status %></p>
+                <button class="button" id="modifyStatus">Change Status</button>
+            </div>
 
-        <div id="oldStatus">
-            <p><%= user.local.status %></p>
-            <button class="button" id="modifyStatus">Change Status</button>
+            <div id="newStatus">
+                <textarea id="statusBox"></textarea>
+                <button class="button" id="saveStatus">Save</button>
+                <button class="button" id="cancelStatus">Cancel</button>
+            </div>
+
         </div>
+    </div>
 
-        <div id="newStatus">
-            <textarea id="statusBox"></textarea>
-            <button class="button" id="saveStatus">Save</button>
-            <button class="button" id="cancelStatus">Cancel</button>
+    <div data-profile="other" id="visitProfile">
+        <div id="profileView">
+            <button class="fa fa-chevron-circle-left fa-3x backToProfile" aria-hidden="true"></button>
+            <img src="/profile-blank.svg" id="profilePicture">
+            <h3 id="profileViewName"></h3>
+            <p id="profileViewStatus" class="status"></p>
         </div>
-
     </div>
 </div>
 
@@ -44,13 +55,6 @@
         <button>Send</button>
     </form>
 
-</div>
-
-<div id="profileView">
-    <img src="/profile-blank.svg" id="profilePicture">
-
-    <h3 id="profileViewName"></h3>
-    <p id="profileViewStatus"></p>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>

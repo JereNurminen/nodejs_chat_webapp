@@ -6,6 +6,8 @@ var timerDone = false;
 
 $( document ).ready(function() {
 
+    Push.clear();
+
     var timer = setTimeout(function(){
         timerDone = true;
     }, 5000);
@@ -52,20 +54,18 @@ $( document ).ready(function() {
         console.log(msg);
         socket.emit('chat message', msg);
         $('#newMessage').val('');
+        scrollToBottom();
         return false;
     });
 
-    $('#messages').scrollTop($('#messages')[0].scrollHeight - $('#messages')[0].clientHeight);
-
     $('#messages').delegate('p.sender', 'click', function() {
         var userToSearch = $(this).text();
-        var userFromDB = getUserInfo(userToSearch);
-        console.log(userToSearch + " " + userFromDB);
-        userFromDB = userFromDB.responseJSON.local.username;
-        $('#profileViewName').text(userFromDB.local.username);
-        $('#profileViewStatus').text(userFromDB.local.status);
-        $('#profileView').toggle();
+        getUserInfo(userToSearch);
     })
+
+    $('.backToProfile').click(function() {
+        toggleProfile();
+    });
 });
 
 function msgPush(msg) {
@@ -93,7 +93,29 @@ function loginPush(user) {
 }
 
 function getUserInfo(searchUser) {
-    return $.post('/userInfoById',{searchUser: searchUser});
+    var userFromDb = $.ajax({
+        method: "POST",
+        url: "/userInfoById",
+        data: { searchUser: searchUser},
+        async: true
+    }).done(function( data ) {
+        console.log(data);
+        $('#profileViewName').text(data.local.username);
+        $('#profileViewStatus').text(data.local.status);
+        toggleProfile()
+        return data;
+    });
+}
+
+function toggleProfile() {
+    $('#visitProfile').toggle();
+    $('[data-profile="own"]').toggle();
+}
+
+function scrollToBottom() {
+    $('#messages').stop().animate({
+        scrollTop: $('#messages')[0].scrollHeight
+    }, 800);
 }
 
 socket.on('user join', function (user) {
@@ -103,7 +125,7 @@ socket.on('user join', function (user) {
     messagesList.append($('<li>'));
     var lastMsgLi = $("li").last();
     lastMsgLi.append($('<p class="joinMsg">').text(user + " joined!"));
-    loginPush(user);
+    if (username != user) loginPush(user);
 });
 
 socket.on('chat message', function (msg) {
