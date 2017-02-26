@@ -11,12 +11,12 @@
     <div data-profile="own">
         <h2>Hello <span id="username"><%= user.local.username %></span>!</h2>
         <p id="logout">Not you? <a href="/logout">Log out.</a></p>
-        <img src="/profile-blank.svg" id="profilePicture">
+        <img src="/upload/profiles/<%= user.id %>_profile.jpg" id="profilePicture">
         <button class="button" id="changeProfilePictureButton">Change profile picture</button>
 
-        <form id="changeProfilePictureForm" action="/changeProfilePic" method="post">
+        <form id="changeProfilePictureForm" enctype="multipart/form-data" method="post" action="/changeProfilePic">
             <input type="file" name="picture" id="picture">
-            <button class="button">Select</button>
+            <button type="submit" class="button">Select</button>
         </form>
 
         <div id="status">

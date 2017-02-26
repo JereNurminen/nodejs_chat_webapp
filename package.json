@@ -15,6 +15,7 @@
     "connect-flash": "latest",
     "cookie-parser": "latest",
     "express": "^4.10.2",
+    "express-busboy": "^5.0.0",
     "express-session": "latest",
     "express-stormpath": "latest",
     "mongoose": "latest",

@@ -1,4 +1,5 @@
-// app/routes.js
+var fs = require("fs");
+
 module.exports = function(app, passport) {
     var mongoose = require('mongoose');
     var userModel = require('./models/user.js');
@@ -6,6 +7,13 @@ module.exports = function(app, passport) {
     var multer = require('multer');
     app.use(bodyParser.json()); // support json encoded bodies
     app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+    var bb = require('express-busboy');
+
+    bb.extend(app, {
+        upload: true,
+        //path: __dirname + '/public/upload/pictures',
+        allowedPath: /./
+    });
 
     // =====================================
     // HOME PAGE (with login links) ========
@@ -52,7 +60,6 @@ module.exports = function(app, passport) {
         res.render('signup.ejs', { message: req.flash('signupMessage') });
     });
 
-    // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect : '/login', // redirect to the secure profile section
         failureRedirect : '/signup', // redirect back to the signup page if there is an error
@@ -100,8 +107,21 @@ module.exports = function(app, passport) {
     });
 
     app.post('/changeProfilePic', function(req, res) {
-
-    })
+        var oldPath = req.files.picture.file;
+        var newPath = __dirname + '/public/upload/profiles/' +req.user.id + '_profile.jpg';
+        console.log("Old path to file: " + oldPath + "\n" +
+                    "New path to file: " + newPath);
+        fs.rename(oldPath, newPath, function(err) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("File moved succesfully!");
+                res.render('chat.ejs', {
+                    user : req.user
+                });
+            }
+        });
+    });
 };
 
 function isLoggedIn(req, res, next) {

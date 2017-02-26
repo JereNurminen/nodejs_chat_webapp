@@ -37,6 +37,7 @@ require('./routes.js')(app, passport); // load our routes and pass in our app an
 //console.log('The magic happens on port ' + port);
 
 server.listen(port, function () {
+    console.log("Server running at " + __dirname);
     console.log('Server listening at port %d', port);
 });
 

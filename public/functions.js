@@ -61,7 +61,7 @@ $( document ).ready(function() {
     $('#messages').delegate('p.sender', 'click', function() {
         var userToSearch = $(this).text();
         getUserInfo(userToSearch);
-    })
+    });
 
     $('.backToProfile').click(function() {
         toggleProfile();
