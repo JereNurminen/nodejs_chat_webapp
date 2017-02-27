@@ -9,15 +9,14 @@ module.exports = function(app, passport) {
     app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
     var bb = require('express-busboy');
 
+    // Setup of the BusBoy. Allows the upload of files (uses the default location for storing the uploads at first
     bb.extend(app, {
         upload: true,
-        //path: __dirname + '/public/upload/pictures',
         allowedPath: /./
     });
 
-    // =====================================
-    // HOME PAGE (with login links) ========
-    // =====================================
+    // Renders the correct page when trying to access the /chat, if the user is logged in.
+    // Otherwise sends the user to the login page
     app.get('/chat', isLoggedIn, function(req, res) {
         res.render('chat.ejs', {
             user_id: req.user._id,
@@ -25,25 +24,21 @@ module.exports = function(app, passport) {
         });
     });
 
+    // Renders the correct page when trying to access the /chat, if the user is logged in.
+    // Otherwise sends the user to the login page
     app.get('/', isLoggedIn, function(req, res) {
         res.render('chat.ejs', {
             user : req.user
-        }); // load the index.ejs file
+        });
     });
 
-
-    // =====================================
-    // LOGIN ===============================
-    // =====================================
-    // show the login form
+    // Handles the login page
     app.get('/login', function(req, res) {
-
         // render the page and pass in any flash data if it exists
         res.render('login.ejs', { message: req.flash('loginMessage') }); 
     });
 
-    // process the login form
-    // process the login form
+    // Processes the login form, using Passport-local
     app.post('/login', passport.authenticate('local-login', {
         successRedirect : '/chat', // redirect to the secure profile section
         failureRedirect : '/login', // redirect back to the signup page if there is an error
@@ -51,40 +46,26 @@ module.exports = function(app, passport) {
     }));
 
 
-    // =====================================
-    // SIGNUP ==============================
-    // =====================================
-    // show the signup form
+    // Shows the signup form
     app.get('/signup', function(req, res) {
         // render the page and pass in any flash data if it exists
         res.render('signup.ejs', { message: req.flash('signupMessage') });
     });
 
+    // Handles the signup using Passport-local
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect : '/login', // redirect to the secure profile section
         failureRedirect : '/signup', // redirect back to the signup page if there is an error
         failureFlash    : true // allow flash messages
     }));
 
-    // =====================================
-    // PROFILE SECTION =====================
-    // =====================================
-    // we will want this protected so you have to be logged in to visit
-    // we will use route middleware to verify this (the isLoggedIn function)
-    app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
-            user : req.user // get the user out of session and pass to template
-        });
-    });
-
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
+    // Handles the logout, again using Passport
     app.get('/logout', function(req, res) {
         req.logout();
         res.redirect('/login');
     });
 
+    // Takes the new status from the request and updates it into the DB
     app.post('/updateStatus', function(req, res) {
         var id = req.user.id;
         var status = req.body.status;
@@ -96,6 +77,7 @@ module.exports = function(app, passport) {
         })
     });
 
+    // Searches and returns a user's info by their username
     app.post('/userInfoById', function(req, res) {
         var searchUser = req.body.searchUser;
         console.log("Retrieving " + searchUser);
@@ -106,11 +88,15 @@ module.exports = function(app, passport) {
         });
     });
 
+    // Handles the changing of the user profile picture.
     app.post('/changeProfilePic', function(req, res) {
+        // Saves the path of the image in the temp-folder to a variable
         var oldPath = req.files.picture.file;
+        // Sets the new path up
         var newPath = __dirname + '/public/upload/profiles/' +req.user.id + '_profile.jpg';
         console.log("Old path to file: " + oldPath + "\n" +
                     "New path to file: " + newPath);
+        // Moves and renames the image
         fs.rename(oldPath, newPath, function(err) {
             if (err) {
                 console.log(err);
@@ -124,6 +110,7 @@ module.exports = function(app, passport) {
     });
 };
 
+// Checks if the user is logged in
 function isLoggedIn(req, res, next) {
 
     if (req.isAuthenticated())

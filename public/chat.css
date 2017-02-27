@@ -110,6 +110,8 @@ textarea {
 
 #profilePicture {
     width: 50%;
+    max-height: 100pt;
+    max-width: 100pt;
     border-radius: 50%;
     margin: 10pt;
     -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.25);
